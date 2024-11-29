@@ -170,13 +170,20 @@ const getScoreBoardWeekly = async (req, res) => {
 
 const updateScoreBoard = async (req, res) => {
     try {
-        const { email,points, bottles } = req.body;
+        const { email, points, bottles } = req.body;
 
-        // Actualiza las tablas
-        const response = await userModel.updateScore({ email, points, bottles });
-        const respondeU = await userModel.updateDayColumn({ email, bottles });
-        
-        res.status(200).json({ ok: true , message: "Actualización exitosa." });
+        // Validar datos
+        if (!email || points == null || bottles == null) {
+            return res.status(400).json({ ok: false, error: "Datos incompletos." });
+        }
+
+        // Actualizar puntaje
+        await userModel.updateScore({ email, points, bottles });
+
+        // Actualizar progreso semanal
+        await userModel.updateDayColumn({ email, bottles });
+
+        res.status(200).json({ ok: true, message: "Actualización exitosa." });
     } catch (error) {
         console.error("Error al actualizar:", error);
         res.status(500).json({ ok: false, error: "Hubo un error al procesar la solicitud." });
@@ -185,12 +192,13 @@ const updateScoreBoard = async (req, res) => {
 
 
 
+
 export const userController = {
     registerUser,
     loginUser,
     getProfileUser,
     getWeeklyProgress,
-    getScoreBoardWeekly, 
+    getScoreBoardWeekly,
     updateScoreBoard
 }
 
