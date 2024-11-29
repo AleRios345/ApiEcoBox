@@ -106,34 +106,25 @@ const updateScore = async ({ email, points, bottles }) => {
 };
 
 const updateDayColumn = async ({ email, bottles }) => {
-    const dayMap = {
-      0: "sunday",
-      1: "monday",
-      2: "tuesday",
-      3: "wednesday",
-      4: "thursday",
-      5: "friday",
-      6: "saturday",
-    };
-  
     const today = new Date().getDay();
-    const dayColumn = dayMap[today];
-  
-    // Validar que dayColumn sea válido
-    if (!dayColumn) {
-      throw new Error("Columna del día inválida");
-    }
-  
+
     const query = `
       UPDATE progreso_semanal_eco_box
-      SET ${dayColumn} = $1
+      SET 
+        ${["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"][today]} = $1
       WHERE id_user = (SELECT id_user FROM users_eco_box WHERE email_user = $2);
     `;
-  
-    // Ejecutar la consulta
-    await pool.query({ text: query, values: [bottles, email] });
-  };
-  
+
+    try {
+        // Ejecutar la consulta
+        await pool.query(query, [bottles, email]);
+    } catch (error) {
+        console.error("Error al actualizar el día:", error);
+        throw new Error("Error al ejecutar la consulta");
+    }
+};
+
+
 
 const scoreboardWeekly = async () => {
     const query = {
