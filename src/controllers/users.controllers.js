@@ -190,19 +190,28 @@ const updateScoreBoard = async (req, res) => {
 
 const updateSemanalScoreBoard = async (req, res) => {
     try {
-        const { email, bottles } = req.body;
-        if (!email || bottles == null) {
+        const { email, bottles, day } = req.body;
+
+        if (!email || bottles == null || !day) {
             return res.status(400).json({ ok: false, error: "Datos incompletos." });
         }
+
+        const validDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
+        if (!validDays.includes(day)) {
+            return res.status(400).json({ ok: false, error: `El día proporcionado no es válido. Debe ser uno de: ${validDays.join(", ")}` });
+        }
+
         // Actualizar progreso semanal
-        await userModel.updateDayColumn({ email, bottles });
+        await userModel.updateDayColumn({ email, bottles, day });
 
         res.status(200).json({ ok: true, message: "Actualización exitosa." });
     } catch (err) {
         console.error("Error al actualizar:", err);
         res.status(500).json({ ok: false, error: "Hubo un error al procesar la solicitud." });
     }
-}
+};
+
 
 
 
