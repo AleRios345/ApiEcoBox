@@ -107,15 +107,16 @@ const updateScore = async ({ email, points, bottles }) => {
 
 const updateDayColumn = async ({ email, bottles, day }) => {
 
+    // Construir la consulta dinámicamente para el nombre de la columna
     const query = `
       UPDATE progreso_semanal_eco_box
-      SET $1 = $2
-      WHERE id_user = (SELECT id_user FROM users_eco_box WHERE email_user = $3);
+      SET ${day} = $1
+      WHERE id_user = (SELECT id_user FROM users_eco_box WHERE email_user = $2);
     `;
 
     try {
         // Ejecutar la consulta
-        await pool.query(query, [day,bottles, email]);
+        await pool.query(query, [bottles, email]);
     } catch (error) {
         console.error("Error al actualizar el día:", error);
         throw new Error("Error al ejecutar la consulta");
