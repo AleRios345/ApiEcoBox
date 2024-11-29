@@ -11,4 +11,5 @@ router.get('/profileUser',verifyToken,userController.getProfileUser);
 router.get('/weeklyProgressUser',verifyTokenUserID,userController.getWeeklyProgress);
 router.get('/scoreboardWeekly',verifyToken  ,userController.getScoreBoardWeekly);
 router.post('/updatescoreboard', userController.updateScoreBoard)
+router.post('/updatescoreboardSemanal',userController.updateSemanalScoreBoard);
 export default router
